@@ -10,16 +10,26 @@ def binary_classification_metrics(y_pred, y_true):
     Returns:
     precision, recall, f1, accuracy - classification metrics
     """
-
-    # TODO: implement metrics!
-    # Some helpful links:
-    # https://en.wikipedia.org/wiki/Precision_and_recall
-    # https://en.wikipedia.org/wiki/F1_score
-
-    """
-    YOUR CODE IS HERE
-    """
-    pass
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
+    for i in range(len(y_pred)):
+        if int(y_pred[i]) == 1:
+            if int(y_true[i]) == 1:
+                TP += 1
+            else:
+                FP += 1
+        else:
+            if int(y_true[i]) == 0:
+                TN += 1
+            else:
+                FN += 1
+    precision = TP/(TP + FP)
+    recall = TP/(TP + FN)
+    f1 = 2*(precision*recall)/(precision + recall)
+    accuracy = (TP + TN)/(TP + TN + FN + FP)
+    return precision, recall, f1, accuracy
 
 
 def multiclass_accuracy(y_pred, y_true):
@@ -31,11 +41,13 @@ def multiclass_accuracy(y_pred, y_true):
     Returns:
     accuracy - ratio of accurate predictions to total samples
     """
-
-    """
-    YOUR CODE IS HERE
-    """
-    pass
+    T = 0
+    ALL = len(y_pred)
+    for i in range(ALL):
+        if y_pred[i] == y_true[i]:
+            T += 1
+    accuracy = T/ALL
+    return accuracy
 
 
 def r_squared(y_pred, y_true):
@@ -48,10 +60,7 @@ def r_squared(y_pred, y_true):
     r2 - r-squared value
     """
 
-    """
-    YOUR CODE IS HERE
-    """
-    pass
+    return 1 - np.sum((y_pred - y_true)**2)/np.sum((y_true - np.mean(y_true))**2)
 
 
 def mse(y_pred, y_true):
@@ -64,10 +73,7 @@ def mse(y_pred, y_true):
     mse - mean squared error
     """
 
-    """
-    YOUR CODE IS HERE
-    """
-    pass
+    return sum((y_pred - y_true)**2)/len(y_pred)
 
 
 def mae(y_pred, y_true):
@@ -80,8 +86,4 @@ def mae(y_pred, y_true):
     mae - mean absolut error
     """
 
-    """
-    YOUR CODE IS HERE
-    """
-    pass
-    
+    return sum(np.absolute(y_pred - y_true))/len(y_pred)

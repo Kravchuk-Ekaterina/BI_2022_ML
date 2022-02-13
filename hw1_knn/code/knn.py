@@ -54,11 +54,14 @@ class KNNClassifier:
         distances, np array (num_test_samples, num_train_samples) - array
            with distances between each test and each train sample
         """
-        
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+
+        num_test_samples = X.shape[0]
+        num_train_samples = self.train_X.shape[0]
+        distances = np.zeros((num_test_samples, num_train_samples))
+        for i in range(num_test_samples):
+            for j in range(num_train_samples):
+                distances[i, j] = np.sum(np.absolute(X[i, :] - self.train_X[j, :]))
+        return distances
 
 
     def compute_distances_one_loop(self, X):
@@ -74,10 +77,12 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        num_test_samples = X.shape[0]
+        num_train_samples = self.train_X.shape[0]
+        distances = np.zeros((num_test_samples, num_train_samples))
+        for i in range(num_test_samples):
+            distances[i, :] = np.sum(np.absolute(X[i, :] - self.train_X), axis=1)
+        return distances
 
 
     def compute_distances_no_loops(self, X):
@@ -93,10 +98,7 @@ class KNNClassifier:
            with distances between each test and each train sample
         """
 
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        return np.sum(np.absolute(X[:, None, :] - self.train_X[None, :, :]), axis=-1)
 
 
     def predict_labels_binary(self, distances):
@@ -114,11 +116,15 @@ class KNNClassifier:
         n_train = distances.shape[1]
         n_test = distances.shape[0]
         prediction = np.zeros(n_test)
-
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        for i in range(n_test):
+            k_neighbours = np.argsort(distances)[i][:self.k]
+            score = 0
+            for neighbour in k_neighbours:
+                if self.train_y[neighbour] == 1:
+                    score += 1
+            if score/self.k >= 0.5:
+                prediction[i] = 1
+        return prediction
 
 
     def predict_labels_multiclass(self, distances):
@@ -135,9 +141,12 @@ class KNNClassifier:
 
         n_train = distances.shape[0]
         n_test = distances.shape[0]
-        prediction = np.zeros(n_test, np.int)
-
-        """
-        YOUR CODE IS HERE
-        """
-        pass
+        prediction = np.zeros(n_test)
+        for i in range(n_test):
+            k_neighbours = np.argsort(distances)[i][:self.k]
+            possible_classes = []
+            for neighbour in k_neighbours:
+                possible_classes.append(self.train_y[neighbour])
+            counts = np.bincount(possible_classes)
+            prediction[i] = np.argmax(counts)
+        return prediction
